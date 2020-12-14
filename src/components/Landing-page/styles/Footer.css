@@ -1,0 +1,17 @@
+.footer{
+    margin-top: 80px;
+    height: 90px;
+    background-color: #1e0c86;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.icon{
+    width: 10px;
+    font-size: 30px;
+    color: white;
+    margin: 20px;
+    
+}
