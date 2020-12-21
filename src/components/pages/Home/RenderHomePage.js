@@ -1,32 +1,109 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../common';
+import styled, {Styled} from "styled-components";
+import axios from 'axios';
+import { Menu, Dropdown, message, Space, Tooltip } from 'antd';
+import { DownOutlined, UserOutlined } from '@ant-design/icons';
+
+
+// Dummy data used for test purposes
+import orgList from "./dummydata";
+
+import OrgCard from "./OrgCard";
+
+const StyledButton = styled.button`
+background-color:none;
+border: none;
+color: black;
+`;
+
+const StyledHeader = styled.header`
+display:flex;
+background-color: rgb(30,12,134);
+justify-content: space-between;
+height: 6rem;
+align-items: center;
+`;
+
+
+const StyledHeaderDiv = styled.div`
+display: flex;
+justify-content: space-evenly;
+width: 100%;
+margin-left: 30%;
+`;
+
+const StyledCarDiv = styled.div`
+width:100%;
+display: flex;
+flex-wrap: wrap;
+
+`;
+
+
+const StyledHeaderText = styled.div`
+text-align: center;
+margin-top: 1rem;
+`;
+
+
 
 function RenderHomePage(props) {
   const { userInfo, authService } = props;
+
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" icon={<UserOutlined/>} onClick={() => authService.logout()}>
+        Logout
+      </Menu.Item>
+      <Menu.Item key="1" icon={<UserOutlined/>} >
+        <Link to="/edit">Edit User</Link>
+      </Menu.Item>
+    </Menu>
+  );
+
+
+
+  useEffect(() => {
+    let userID = localStorage.getItem("okta-token-storage");
+    axios
+    .get(`https://microfund-a-api.herokuapp.com/user/${userID}`)
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log("Error" + err);
+    });
+  }, []);
   return (
     <div>
-      <h1>Hi {userInfo.name} Welcome to Labs Basic SPA</h1>
-      <div>
-        <p>
-          This is an example of a common example of how we'd like for you to
-          approach components.
-        </p>
-        <p>
-          <Link to="/profile-list">Profiles Example</Link>
-        </p>
-        <p>
-          <Link to="/example-list">Example List of Items</Link>
-        </p>
-        <p>
-          <Link to="/datavis">Data Visualizations Example</Link>
-        </p>
-        <p>
-          <Button
-            handleClick={() => authService.logout()}
-            buttonText="Logout"
-          />
-        </p>
+      <StyledHeader>
+      {/* <img id="header-micro-img" alt="Microfund Logo" src="" /> */}
+      
+      <StyledHeaderDiv>
+      <h1>Microfund</h1>
+            <Space wrap>
+          <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />}>
+            User Options
+          </Dropdown.Button>
+        </Space>,
+        </StyledHeaderDiv>
+          </StyledHeader>
+      <StyledHeaderText>
+        <h2>Welcome back {userInfo.name}!</h2>
+      </StyledHeaderText>
+      <div id="org-list-cnt">
+        {
+          orgList.map(org => {
+            return (
+              <StyledCarDiv>
+                  <OrgCard name={org.name} location={org.location} description={org.description} />
+              </StyledCarDiv>
+            );
+          })
+        }
       </div>
     </div>
   );

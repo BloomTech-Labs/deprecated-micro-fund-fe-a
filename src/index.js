@@ -8,11 +8,12 @@ import {
 } from 'react-router-dom';
 import { Security, LoginCallback, SecureRoute } from '@okta/okta-react';
 
+
+import ApplicationPage from "./components/pages/Applications/ApplicationPage";
 import 'antd/dist/antd.less';
 
 import { NotFoundPage } from './components/pages/NotFound';
 import { ExampleListPage } from './components/pages/ExampleList';
-import { ProfileListPage } from './components/pages/ProfileList';
 import { LoginPage } from './components/pages/Login';
 import { HomePage } from './components/pages/Home';
 import { LandingPage } from './components/pages/Landing';
@@ -20,14 +21,20 @@ import { ExampleDataViz } from './components/pages/ExampleDataViz';
 import { config } from './utils/oktaConfig';
 import { LoadingComponent } from './components/common';
 
+import UserPage from "./components/UserPage/UserPage";
+
+import {Provider} from "react-redux";
+import {createStore, applyMiddleware} from "redux";
+import microfundReducer from "./state/reducers/index";
+import thunk from "redux-thunk";
+
+const store = createStore(microfundReducer, applyMiddleware(thunk));
+
 ReactDOM.render(
-  <Router>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </Router>,
-  document.getElementById('root')
-);
+  <Provider store={store}>
+  <App />,
+  </Provider>,
+  document.getElementById('root'));
 
 function App() {
   // The reason to declare App this way is so that we can use any helper functions we'd need for business logic, in our case auth.
@@ -39,6 +46,7 @@ function App() {
     // It'll automatically check if userToken is available and push back to login if not :)
     history.push('/login');
   };
+//test
 
   return (
     <Security {...config} onAuthRequired={authHandler}>
@@ -53,7 +61,8 @@ function App() {
           component={() => <HomePage LoadingComponent={LoadingComponent} />}
         />
         <SecureRoute path="/example-list" component={ExampleListPage} />
-        <SecureRoute path="/profile-list" component={ProfileListPage} />
+        <SecureRoute path="/edit" component={UserPage} />
+        <SecureRoute path="/applications" component={ApplicationPage}/>
         <SecureRoute path="/datavis" component={ExampleDataViz} />
         <Route component={NotFoundPage} />
       </Switch>
