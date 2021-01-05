@@ -1,7 +1,9 @@
 import Axios from "axios";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useHistory, Link} from "react-router-dom";
 import Styled from "styled-components";
+
+import axios from "axios";
 
 import { connect } from "react-redux";
 
@@ -9,7 +11,7 @@ import { connect } from "react-redux";
 import { Menu, Dropdown, message, Space, Tooltip } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 
-
+import {getUser} from "../../state/actions/index";
 
 const StyledHeader = Styled.header`
 display:flex;
@@ -42,6 +44,11 @@ const UserDescription = Styled.div`
 `;
 
 const UserPage = props => {
+
+  useEffect(() => {
+    props.getUser();
+  }, []);
+
     const { userInfo, authService } = props;
 
     const [userEmail, setUserEmail] = useState("");
@@ -103,7 +110,7 @@ const UserPage = props => {
       {/* <img id="header-micro-img" alt="Microfund Logo" src="" /> */}
       
       <StyledHeaderDiv>
-      <h1>Microfund</h1>
+      <h1><Link to="/">Microfund</Link></h1>
             <Space wrap>
           <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />}>
             User Options
@@ -113,14 +120,13 @@ const UserPage = props => {
           </StyledHeader>
         <UserCardContainer>
            <UserInfo>
-            <h1>{props.name}</h1>
-            <h2>{props.email}</h2>
-            <h2>{props.org}</h2>
+            <h1>{props.user.username}</h1>
+            <h2>{props.user.lastname},{props.user.firstname}</h2>
            </UserInfo>
 
            <UserDescription>
                <p>
-               {props.description}
+               {props.user.description}
                </p>
            </UserDescription>
         </UserCardContainer>
@@ -131,12 +137,10 @@ const UserPage = props => {
 
 const mapStateToProps = state => {
     return {
-        email : state.email,
-        name: state.name,
-        org: state.org,
-        description: state.description
+      user: state.user,
+      isLoading: state.isLoading,
     };
 };
 
 
-export default connect(mapStateToProps, null)(UserPage);
+export default connect(mapStateToProps, {getUser})(UserPage);

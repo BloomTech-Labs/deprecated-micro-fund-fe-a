@@ -5,6 +5,10 @@ import styled, {Styled} from "styled-components";
 import axios from 'axios';
 import { Menu, Dropdown, message, Space, Tooltip } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { connect } from "react-redux";
+
+import {getOrgs} from "../../../state/actions/index";
+
 
 
 // Dummy data used for test purposes
@@ -65,25 +69,17 @@ function RenderHomePage(props) {
   );
 
 
+useEffect(() => {
+  props.getOrgs();
+}, []);
 
-  useEffect(() => {
-    let userID = localStorage.getItem("okta-token-storage");
-    axios
-    .get(`https://microfund-a-api.herokuapp.com/user/${userID}`)
-    .then(res => {
-      console.log(res);
-    })
-    .catch(err => {
-      console.log("Error" + err);
-    });
-  }, []);
   return (
     <div>
       <StyledHeader>
       {/* <img id="header-micro-img" alt="Microfund Logo" src="" /> */}
       
       <StyledHeaderDiv>
-      <h1>Microfund</h1>
+      <h1><Link to="/">Microfund</Link></h1>
             <Space wrap>
           <Dropdown.Button overlay={menu} placement="bottomCenter" icon={<UserOutlined />}>
             User Options
@@ -95,8 +91,8 @@ function RenderHomePage(props) {
         <h2>Welcome back {userInfo.name}!</h2>
       </StyledHeaderText>
       <div id="org-list-cnt">
-        {
-          orgList.map(org => {
+        { props.isLoading ? "Loading Orgs" :
+          props.orgs.map(org => {
             return (
               <StyledCarDiv>
                   <OrgCard name={org.name} location={org.location} description={org.description} />
@@ -108,4 +104,12 @@ function RenderHomePage(props) {
     </div>
   );
 }
-export default RenderHomePage;
+
+
+const mapStateToProps = state => {
+  return {
+    orgs: state.orgs,
+    isLoading: state.isLoading,
+  };
+};
+export default connect(mapStateToProps, {getOrgs})(RenderHomePage);

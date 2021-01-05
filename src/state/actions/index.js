@@ -20,7 +20,7 @@ export const GET_USER_FAILURE = "GET_USER_FAILURE";
 export const getOrgs = () => dispatch => {
     dispatch({type: GET_ORGS_START});
     axios
-    .get('')
+    .get('https://microfund-a-api.herokuapp.com/orgs/all')
     .then(res => {
         console.log('Orgs: ', res.data);
         dispatch({type: GET_ORGS_SUCCESS, payload: res.data});
@@ -33,8 +33,14 @@ export const getOrgs = () => dispatch => {
 }; 
 
 
-// export const getUser = () = > dispatch => {
-//     dispatch({type: GET_USER_START});
-//     axios
-//     .get('https://microfund-a-api.herokuapp.com/user/')
-// }
+export const getUser = () => dispatch => {
+    dispatch({type: GET_USER_START});
+    axios
+    .get('https://microfund-a-api.herokuapp.com/users/user/4')
+    .then(res=> {
+        dispatch({type: GET_USER_SUCCESS, payload: res.data});
+    })
+    .catch(err=> {
+        dispatch({type: GET_ORGS_FAILURE, payload: err.message});
+    });
+};
